@@ -1,5 +1,10 @@
-# docker compose up -d --build     → http://localhost:3000   (the admin is at /admin)
-# docker compose --profile https up -d --build   → HTTPS for SITE_DOMAIN through Caddy
+# 两种部署方式（都在 .env 里选，不需要改这个文件）：
+#   A. 本机 / VPS 直接用 Caddy 自动 HTTPS：.env 里 COMPOSE_PROFILES=https，PORT=3000
+#      docker compose up -d --build              → http://localhost:3000
+#      docker compose --profile https up -d      → SITE_DOMAIN 的 HTTPS（Caddy）
+#   B. Dokploy（Traefik 负责域名和 HTTPS）：.env 里 COMPOSE_PROFILES= 留空，PORT=127.0.0.1:3000
+#      Caddy 不启动；web 仍保留端口映射，但只监听本机，Dokploy 的 Traefik 从容器网络访问 web:3000。
+#   两种方式都保留 db/setup/api/worker/web 五个服务；数据库、API 不对公网开放。
 name: aihot
 
 x-app: &app
@@ -80,10 +85,16 @@ services:
       WEB_PORT: "3000"
     ports:
       - "${PORT:-3000}:3000"
+    # 容器网络里固定 3000：Dokploy 的 Traefik（或 Caddy）按这个端口转发，
+    # 即使 .env 把 PORT 设成 127.0.0.1:3000，也不影响容器之间的访问。
+    expose:
+      - "3000"
     depends_on:
       api:
         condition: service_started
 
+  # 本机 HTTPS 用（.env 里 COMPOSE_PROFILES=https 才会启动）。
+  # Dokploy 已有 Traefik，保留这个服务作为另一种部署方式，不要删。
   caddy:
     image: caddy:2-alpine
     profiles: ["https"]

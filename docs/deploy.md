@@ -54,6 +54,10 @@ TRUST_PROXY=true           # 访客地址从 Caddy 转来的请求头里读
 docker compose --profile https up -d --build
 ```
 
+也可以在 `.env` 里写 `COMPOSE_PROFILES=https`，之后普通的 `docker compose up -d` 就会带上 Caddy。
+
+用 **Dokploy** 部署时不需要删 Caddy、`profiles` 或网页端口映射：`.env` 里 `COMPOSE_PROFILES=` 留空、`PORT=127.0.0.1:3000`，Caddy 不启动，Dokploy 的 Traefik 从容器网络访问 `web:3000`。完整步骤见 [部署到 Dokploy](deploy-dokploy.md)。
+
 已经有 Nginx 的话，不用 Caddy，把站点反向代理到 `http://127.0.0.1:3000`，带上 `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` 和 `proxy_set_header X-Forwarded-Proto $scheme;`（后台登录按它判断访问是不是 HTTPS，少了它登录 cookie 会丢掉 Secure），并在 `.env` 里设 `TRUST_PROXY=true`。`SITE_URL` 一定要写成读者实际访问的地址：生成的链接、RSS、分享图和 MCP 都用它。
 
 MCP 默认接受 `SITE_URL` 的主机以及 `localhost`、`127.0.0.1`、`[::1]`。额外主机用 `MCP_ALLOWED_HOSTS` 配置，以逗号分隔，例如 `extra.example:8443,[2001:db8::1]`。主机名不区分大小写，IPv6 必须加方括号；可带 0–65535 的十进制端口，匹配时忽略端口。包含路径、用户信息或非法端口的配置不会生效。`127.1` 等别名需要明确列入；此配置只影响 Host 校验，不扩大浏览器 Origin 许可。
