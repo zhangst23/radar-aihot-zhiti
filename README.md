@@ -1,8 +1,11 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.png">
-    <img src="docs/assets/banner-light.png" alt="AIHOT：每个行业，都可以有自己的 AIHOT。很多条信源流进中间的精选，再分给法律、人力资源、金融等各个行业" width="100%">
-  </picture>
+  <img src="site/brand/logo.svg" width="72" alt="全球原料雷达">
+</p>
+
+<h1 align="center">全球原料雷达</h1>
+
+<p align="center">
+  <b>盯住全球原料、食品添加剂、API 与化妆品原料的公开信源，<br>挑出影响采购、配方和合规的动态，每天出一份原料日报。</b>
 </p>
 
 <p align="center">
@@ -10,178 +13,192 @@
   <img src="https://img.shields.io/badge/Node.js-24-176b75?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js 24">
   <img src="https://img.shields.io/badge/PostgreSQL-17-176b75?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 17">
   <img src="https://img.shields.io/badge/Docker-Compose-176b75?style=flat-square&logo=docker&logoColor=white" alt="Docker Compose">
-  <a href="https://aihot.news"><img src="https://img.shields.io/badge/%E7%BA%BF%E4%B8%8A%E5%8E%9F%E7%AB%99-aihot.news-202a30?style=flat-square" alt="线上原站 aihot.news"></a>
-</p>
-
-<p align="center">
-  <b>一个自己找热点、自己写日报的网站框架222。</b><br>
-  把信源换成你的，把精选标准换成你的 KnowHow，它就是你的行业热点站。
-</p>
-
-<p align="center">
-  <b>简体中文</b> · <a href="README.en.md">English</a>
 </p>
 
 <p align="center">
   <a href="#跑起来">跑起来</a> ·
-  <a href="docs/customize.md">改成你的行业</a> ·
   <a href="#它是怎么工作的">它是怎么工作的</a> ·
-  <a href="#文档">文档</a> ·
-  <a href="https://github.com/KKKKhazix/AIHOT/discussions">社区交流</a>
+  <a href="#站点内容">站点内容</a> ·
+  <a href="#配置">配置</a> ·
+  <a href="#文档">文档</a>
 </p>
 
 <br>
 
 ## 这是什么
 
-[AIHOT](https://aihot.news) 是我做的一个 AI 热点网站。它每天从一批信源里收资料，用大模型先筛一遍、再独立打两次分，挑出真正值得看的，写成中文标题和摘要；把不同来源说的同一件事聚成一个事件，按有多少人在说排出热点；每天早上出一份日报。
+全球原料雷达是一个面向原料行业的 B2B 情报站：采集全球监管机构、原料企业和行业媒体的公开信源，用模型判断一条消息对采购、配方和合规有没有用；把不同来源报道的同一件事归成一个事件，按参与报道的独立来源排出热点；每天 08:00 出一份原料日报，周一和每月 1 日汇编周报、月报。
 
-这个仓库是它的引擎和框架：网站、后台、精选流程、聚簇和热度算法，**所有提示词的原文和入选门槛**，都在这里。
+站点对外提供网页、RSS、公开 API、MCP 和 Agent Markdown；读者匿名访问，不需要注册。后台只允许管理员登录。
 
-## 为什么开源
+## 站点内容
 
-这半年，很多做法律、做 HR、做金融、做贵金属的朋友问我，能不能也给他们的行业做一个。
+### 12 个一级分类，9 个日报分节
 
-我做不了。我不懂你们的行业，不知道哪些信源有用，也不知道什么样的消息，对你们来说才叫热点。
+| 分类 | 内容 |
+|---|---|
+| 法规监管 | 新食品原料、化妆品原料、药用辅料与食品添加剂的批准、限量、禁限用和安全通报 |
+| 研究与临床 | 临床、功效、安全性与检测方法的新研究 |
+| 天然与植物原料 | 植物提取物、中药材、天然色素与甜味剂、精油 |
+| 香料香精 | 香辛料、精油、天然与合成香料、香精配方 |
+| 食品添加剂 | 防腐、抗氧化、乳化、增稠、甜味、酶制剂 |
+| 功能成分与营养 | 蛋白与肽、益生菌、纤维、维生素、Omega-3 |
+| 化妆品原料 | 美白、抗衰、防晒、保湿等活性成分与 INCI 新原料 |
+| 原料药与医药 | 原料药、中间体、药用辅料、CDMO、GMP/DMF/CEP |
+| 生物制造与创新 | 合成生物、精准发酵、替代蛋白、新型原料 |
+| 供应链与贸易 | 价格、产地、产能、关税、物流与可持续采购 |
+| 企业与市场 | 并购、融资、合作、财报、扩产与经营风险 |
+| 展会与活动 | 全球原料与配料展会、会议与现场发布 |
 
-但你们懂。
+日报按 9 个分节排版：法规与科学 / 研究与临床 / 天然与草本 / 食品与营养 / 化妆品原料 / 原料药与医药 / 生物制造 / 市场与供应链 / 展会与活动。
 
-既然我没办法满足所有人，那就把火种交到大家自己手上。
+### 主题与二级分类
 
-## 说在前面
+- 31 个主题页：12 家原料企业（ADM、Cargill、DSM-Firmenich、Givaudan、IFF、Symrise、BASF、Croda、Lonza、Kerry、Indena、Sabinsa）、11 个原料品类、8 种内容形态。
+- 品类目录 `/categories`，每个一级分类下有若干二级入口，例如 `/category/natural/botanical-extracts`、`/category/functional/probiotics`。
+- 二级页只在该分类下有实际报道时允许索引、才在目录里给链接；空页面不索引，也不进 sitemap。
 
-- **我不是专业的开发者。** 我是设计师出身，半年前还看不太懂代码。这套代码是我和 AI 一起重写的，比以前干净了很多，但一定还有写得不好的地方。发现问题欢迎提 Issue，我不一定能很快回复，先说声抱歉。
-- **这是 AIHOT 的引擎。** 它和 AIHOT 线上跑的是同一份引擎代码，同步时直接从线上导出，不是精心打磨的通用框架。以后 AIHOT 的更新，我会尽量同步过来，但没法保证每一次都同步。模型榜、Codex 重置监控、主题页的大事记这些只对 AI 行业有意义的功能，可安装的 Agent Skill 文件，以及 AIHOT 自己的运营工具，只留在 AIHOT 上；开源版给 Agent 的入口是 MCP 和站点上的 `/agent` 页面。
-- **里面没有 AIHOT 的信源名单和运营数据。** 仓库带了 18 个公开的海外 AI 资讯源做示范，够你跑起来看效果；真正的信源，要换成你自己行业的。
-- **请不要用 AIHOT 的名字和 Logo。** 换上你自己的名字，它就是你的站。
+### 首页模块
+
+首页除了精选信息流，还展示：
+
+- 全球原料脉搏：今日更新、近 7 天、法规动向、供应风险、原料发布、即将开展
+- 重大行业新闻：标题、摘要、分类、原料标签、公司标签、来源、评分与重要性
+- 法规雷达、供应链观察、创新雷达、企业动态、热门原料
+- 展会日历：最近 4 场
+
+所有数字都来自已收录的公开报道；没有数据时显示空态，不用示例数字填充。
+
+### 展会日历
+
+`/events` 是已核实的国际原料展会日历，可以按月份、国家、行业和状态筛选，页面带 schema.org `Event` 结构化数据。
+
+目前收录 15 场（2026-11-16 核对）：Fi Europe、CPHI India、PMEC India、Pharmapack Europe、Natural Products Expo West、in-cosmetics Global / Korea / Latin America / Asia、CPHI Japan / Middle East / Americas / China、Hi & Fi Asia-China、Fi Asia Thailand。
+
+日期、城市和场馆来自主办方页面；没有核实到确切日期的展会不写入。数据在 `industry/events.json`，新增前先核对官网，并更新文件里的 `checkedAt`。
+
+### 信源
+
+`industry/sources.json` 带 16 个 RSS 示范信源：
+
+- 监管机构：EFSA News、EFSA Publications
+- 原料企业：Givaudan、Indena、Sabinsa、BENEO
+- 行业媒体：Food Dive、Just Food、Nutritional Outlook、Perfumer & Flavorist、GCI Magazine、Pharmaceutical Technology、BioPharm International、PharmaTimes、BioPharma Dive、New Hope Network
+
+2026-11-16 从开发机实测：16 个 feed 都能访问；15 个有可用条目，Sabinsa 返回合法空 feed。企业官网历史条目可能夹带旧闻，采集端有时间窗和首次回填上限。
+
+信源只是配置，不代表已经采集。首次部署时 `COLLECT_ENABLED=false`，确认站点正常后再打开。
 
 ## 它是怎么工作的
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/how-dark.png">
-  <img src="docs/assets/how-light.png" alt="六步：采集、预筛、两次评分、写作、聚簇、热点与成刊" width="100%">
-</picture>
+一条资料从信源进来，先判重、再预筛；可能重要的独立打两次分，写好中文标题、摘要和关注理由；结构抽取给出分类、标签、主体和事实；同一件事的多篇报道归成一个事件，算进热度。分数过了门槛、又不是已有新闻的重复，才进精选；日报按规则编出当天要闻，周报、月报再从日报汇编。
 
-一条资料从信源进来，先判重，再预筛；可能重要的独立打两次分，写好中文标题和摘要，和别的报道聚成事件，算进热度。X 帖子没有正文或只有链接时，保留原帖的链接和图片，不调用写作或翻译模型。分数过了门槛、又不是精选里已有新闻的重复，才进精选；日报按规则编出当天要闻，周报、月报再从日报里汇编。每一步的提示词都在 [`industry/prompts/`](industry/prompts/)，改标准不用改代码。详见 [精选与校准](docs/selection.md)。
+- **评分**：7 种内容类型（法规、供应、企业动作、原料发布、研究、展会、市场分析），5 个维度（实质份量、信息增量、证据强度、共振面、可用性）加权成 0–100。T1 / T1_5 / T2 门槛分别是 60 / 65 / 76，监管机构和企业官方发布另有门槛下限。
+- **行业判断**：什么算重要、什么是噪声写在 `industry/prompts/selection-score.md`；分类边界写在 `structure.md`。改标准不用改代码。
+- **防张冠李戴**：标题和摘要里出现的公司必须在原文里出现过，否则退回原题；身份词典在 `industry/taxonomy.ts`。
+- **归组与热点**：同一事实归成一个事件，代表稿按信源权威、全文、分数和时间选；热度按独立来源计数，重复转载不多算。
+- **安全边界**：材料里的提示词和指令一律视为不可信输入，不执行。
 
-### 聚簇与热点
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/cluster-dark.png">
-  <img src="docs/assets/cluster-light.png" alt="五个来源的报道聚成一个事件，事件进入当前热点榜" width="100%">
-</picture>
-
-同一件事，官网发一篇、媒体转十篇、X 上吵一天，读者只需要看到一次。AIHOT 把它们聚成一个**事件**：先用标题摘要的向量（没配向量服务时比文字重合度）在最近两周里找候选，再让模型判断是同一件事、后续进展，还是两件事；拿不准的合并，写入前再让模型复核一遍（复核可以单独换一家模型，设 `GROUP_REVIEW_MODEL`）。
-
-**热度**按事件算，不按文章算：48 小时内，每个独立来源只算一次，24 小时减半。重复抓取不会多算，一家媒体发十篇也只算一次，所以排在前面的，是真正有很多人在说的事。
-
-### 速度
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/perf-dark.png">
-  <img src="docs/assets/perf-light.png" alt="AIHOT 线上实测：页面中位数 10 毫秒，95% 在 50 毫秒内；接口中位数 6 毫秒，95% 在 12 毫秒内；文章页 95% 在 14 毫秒内" width="100%">
-</picture>
-
-## 你会得到什么
-
-| | |
-|---|---|
-| **六种信源** | RSS、网页列表、JSON 接口、X 账号、微信公众号，以及你自己脚本推送进来的内容。信源分三级（官方一手、官方账号与准官方、媒体与个人），各级入选门槛不同；抓取频率按产出自动调整 |
-| **精选** | 预筛，同一份评分标准独立打两次分，再按信源分级的门槛决定入选；同一条新闻只占一条，换个说法的重复不进。提示词和门槛全部公开，全部可以改；用你自己标注的样本在 SelectBench 里校准 |
-| **写作** | 中文标题、答案先行的摘要、推荐理由，外文全文翻译；分类、标签和新闻事实单独抽取；防止模型把原文没提到的公司写进标题 |
-| **聚簇** | 不同来源报道的同一件事聚成一个事件，后续进展挂在同一个事件下，事件页有综述；进展和报道时间线可一起切换“最新在前”或“最早在前”；人工改过的归属不会被覆盖 |
-| **热点** | 按事件算热度：独立来源越多越靠前，X 上的讨论也算进来；和 6 小时前比，涨得快的标上升，新出现的标“新” |
-| **日报、周报、月报** | 每天出日报（默认 08:00），按规则编出当天要闻：一件事一条，报过的事只在有新进展时跟进，不调模型。每周一出周报、每月 1 日出月报（默认 10:00、10:30），从日报里汇编，模型只写总述和栏目导读。几点出刊在 `site/site.ts` 的 `EDITION_TIMES` 里改 |
-| **主题与搜索** | 公司、方向、内容形态三类主题页；标题摘要搜索和全文相关搜索 |
-| **阅读设置** | 深浅色外观、网站默认字体或浏览器默认字体；收藏和阅读设置只保存在本机，可以导出、导入备份 |
-| **给 Agent 用** | RSS（精选、全部、全文、日报、周报、月报）、公开 API、MCP、Agent Markdown、`llms.txt`，同一份内容给人看也给 Agent 用 |
-| **后台** | 信源管理与试抓、内容诊断与人工评分更正、精选评测、每一步单独换模型、付费服务的预算熔断、运行记录与告警 |
-
-## 看一眼
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/shots-dark.png">
-  <img src="docs/assets/shots-light.png" alt="首页的每日精选，关于页的信源河" width="100%">
-</picture>
-
-<p align="center"><sub>截图来自用示范信源跑起来的本地站，站名是默认的 MyHOT。</sub></p>
+每一步的提示词都在 [`industry/prompts/`](industry/prompts/)，入选门槛在 [`industry/selection.ts`](industry/selection.ts)。详见 [精选与校准](docs/selection.md)。
 
 ## 跑起来
 
-想创建自己的独立站点，可以先点 [Use this template](https://github.com/KKKKhazix/AIHOT/generate)，再克隆你生成的仓库。想持续合并上游更新或贡献代码，建议先 Fork。下面的命令适合直接试用。
-
-需要 [Docker](https://docs.docker.com/get-started/get-docker/)、[Node.js 24](https://nodejs.org/en/download)（运行 `init-env` 生成配置要用），和一个 OpenAI 兼容的模型 API Key（DeepSeek、千问、智谱都可以）。
-
-`init-env` 默认按 DeepSeek 配置。用千问、智谱等别家，照 `.env.example` 里的例子改 `.env` 的 `LLM_BASE_URL`、`LLM_MODEL` 和 `LLM_EXTRA_JSON`；用推理模型（先想再答）时，还要设 `LLM_REASONING_TOKENS` 给推理留出输出额度。
+需要 Docker、Node.js 24（生成配置用），以及一个 OpenAI 兼容的模型 API Key。默认按 DeepSeek 配置；换服务商时改 `.env` 的 `LLM_BASE_URL`、`LLM_MODEL` 和 `LLM_EXTRA_JSON`。
 
 ```bash
-git clone https://github.com/KKKKhazix/AIHOT.git myhot
-cd myhot
+git clone https://github.com/zhangst23/radar-aihot-zhiti.git
+cd radar-aihot-zhiti
 node scripts/init-env.ts --llm-key <你的模型 API Key>
 docker compose up -d --build
 ```
 
-打开 <http://localhost:3000>。后台在 `/admin`，管理员密码在 `.env` 的 `ADMIN_PASSWORD` 里。一两分钟后开始有内容，第一次导入的资料大约半小时处理完。
+打开 <http://localhost:3000>，后台在 `/admin`，密码是 `.env` 里的 `ADMIN_PASSWORD`。
 
-机器上没有 Node、服务器在中国大陆、要配域名和 HTTPS，或者不用 Docker、直接在 Linux、macOS 上跑（Windows 用 WSL2），见 [部署](docs/deploy.md)。
+首次部署的安全阀默认关闭：
 
-站点跑起来后，打开 `/agent` 可以复制 MCP、RSS 或 API 的接入方式；只能读网页的 Agent 从 `/api/v1/agent` 开始；接口说明在 `/openapi-v1.json`。
-
-## 把它改成你的行业
-
-最省事的办法：打开你的 Agent（Claude Code、Codex 都可以），把这个仓库交给它，然后说：
-
-```text
-请读 AGENTS.md 和 docs/customize.md，把这个站改成「XX 行业」的热点站。
-我关心的是：……（写你想盯的信源、你觉得什么消息重要、什么不重要，越具体越好）。
-改完帮我跑 npm run typecheck、npm test 和 node scripts/smoke.ts，并告诉我还需要我自己决定哪些事。
+```dotenv
+COLLECT_ENABLED=false
+MODEL_CALLS_ENABLED=false
 ```
 
-要改的东西几乎都在 [`site/`](site/) 和 [`industry/`](industry/) 这两个文件夹里，代码基本不用动：
+确认首页、后台和数据库都正常后，再把它们改成 `true` 并重启 worker。第一次导入会处理一批历史条目，模型费用取决于信源数量和回填上限。
 
-| 文件 | 改什么 |
+### 部署到 Dokploy
+
+项目同时保留两种部署方式，用 `.env` 切换，不需要删 Caddy 或端口映射：
+
+- **本机 / VPS 用 Caddy**：`COMPOSE_PROFILES=https`、`PORT=3000`
+- **Dokploy（Traefik 管域名和 HTTPS）**：`COMPOSE_PROFILES=` 留空、`PORT=127.0.0.1:3000`
+
+完整步骤见 [部署到 Dokploy](docs/deploy-dokploy.md)；Docker、域名、HTTPS、备份和直接跑 Node 见 [部署](docs/deploy.md)。
+
+## 配置
+
+配置都在 `.env`，不要提交到 Git。
+
+| 变量 | 作用 |
 |---|---|
-| `site/site.ts` | 站名、行业词、出刊时间、首页文案、关于页、条目与日报周报月报上的说法、公开接口的分类 |
-| `industry/taxonomy.ts`、`industry/topics.json` | 分类、标签、主题 |
-| `industry/sources.json` | 首次启动时导入的信源 |
-| `industry/prompts/` | 精选标准和写作要求。**你的行业 KnowHow，就写在这里** |
-| `industry/selection.ts` | 入选门槛 |
-| `site/models.ts` | 每一步默认用哪个模型（不改也行：都用 `.env` 里配的那一个） |
-| `site/brand/`、`site/pages/`、`site/public/`、`site/changelog.json` | 图标与 Logo，使用规则和隐私说明，`robots.txt` 这类发布在网站根目录的文件，更新日志 |
-| `modules/` | 框架里没有、只有你的站要的功能，做成模块放在这里，见 [架构](docs/architecture.md#模块) 的“模块” |
+| `SITE_URL` | 站点对外地址，生成的链接、RSS、分享图、MCP 都用它 |
+| `ADMIN_PASSWORD` | 后台登录密码，至少 12 位 |
+| `SESSION_SECRET`、`IMG_PROXY_SIGN_SECRET` | 会话与图片代理签名密钥，各填随机串 |
+| `POSTGRES_PASSWORD` | Compose 里 PostgreSQL 的密码 |
+| `LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL` | 模型接口；OpenAI 兼容即可 |
+| `TRUST_PROXY` | 在 Caddy、Nginx、Dokploy Traefik 后面设为 `true` |
+| `PORT` | 网页发布地址；反向代理后面用 `127.0.0.1:3000` |
+| `COMPOSE_PROFILES` | 本机 Caddy 用 `https`，Dokploy 留空 |
+| `INGEST_RATE_LIMIT` | 外部推送接口的限流，默认 10 次/分钟 |
+| `COLLECT_ENABLED`、`MODEL_CALLS_ENABLED` | 采集和模型调用的总开关，默认关闭 |
 
-最值得花时间的是评分标准（`industry/prompts/selection-score.md`）和门槛：拿一两百条你自己标注过的资料，用 `scripts/eval-selection.ts` 跑一遍，看它选得准不准，再回去改。怎么做写在 [精选与校准](docs/selection.md) 里。
+模型调用经过回执和预算熔断；预算在后台“设置”里按服务配置，任何一项为 0 就停用该服务。
+
+## 数据与真实性
+
+- 价格、产能、日期、展会地点这类数字只展示原文写明的，不补全、不推算。
+- 展会日期必须来自主办方页面；无法核实的活动不写进日历。
+- 没有收录到内容时，首页和分类页显示空态，不生成示例数据。
+- 信源展示默认只给摘要和原文链接（`site_fulltext` 关闭），来源明确允许时才打开全文。
+
+## 测试
+
+```bash
+npm run typecheck
+DATABASE_URL=postgres://127.0.0.1:5432/radar_test npm test
+npm run build -w @aihot/web && npm run test:web
+node scripts/smoke.ts --base http://localhost:3000
+```
+
+`npm test` 需要一个可建库的 PostgreSQL 账号，数据库名以 `_test` 或 `_ci` 结尾。浏览器测试需要先 `npx playwright install chromium webkit`。
+
+## 目录
+
+| 路径 | 内容 |
+|---|---|
+| `site/` | 站名、文案、每一步的模型、品牌图、条款模板、更新日志 |
+| `industry/` | 分类、标签、主题、信源、提示词、门槛、展会日历、示例金标 |
+| `apps/api` | Fastify 接口 |
+| `apps/worker` | 采集、模型处理、归组、报告、备份等后台任务 |
+| `apps/web` | React Router 服务端渲染的网站 |
+| `packages/backend` | 公开读取层、发布、报告、任务、模型调用 |
+| `packages/contracts` | 前后端共享的类型与词表 |
+| `modules/` | 只属于本站的扩展模块 |
 
 ## 文档
 
 | 文档 | 内容 |
 |---|---|
-| [把它改成你的行业](docs/customize.md) | 站名、分类、主题、信源、提示词、门槛、模型、品牌，一步一步来 |
-| [信源](docs/sources.md) | 六种信源怎么配，分级和全文，抓取频率，旧文和存档，固定起点 `publishedAfter`，外部推送接口 |
-| [精选与校准](docs/selection.md) | 一条资料怎么变成精选、怎么编进日报周报月报，怎么用自己的样本校准 |
-| [事件归组与关系评测](docs/grouping.md) | 事件关系怎么判断，怎么用自己标注的成对样本评测 |
-| [综述评测](docs/story-digest-evaluation.md) | 改事件综述提示词前，怎么在同一批事件上并排比较 |
-| [部署](docs/deploy.md) | Docker、域名和 HTTPS、中国大陆、更新、备份、花多少钱，不用 Docker 时在 Linux、macOS（Windows 用 WSL2）上怎么跑 |
-| [架构](docs/architecture.md) | 三个进程、几条不变的规则、目录、模块、数据库迁移、对外出口、测试 |
+| [把它改成你的行业](docs/customize.md) | 站名、分类、主题、信源、提示词、门槛、品牌 |
+| [信源](docs/sources.md) | 六种信源怎么配、分级与全文、抓取频率、外部推送 |
+| [精选与校准](docs/selection.md) | 一条资料怎么变成精选、怎么编进日报周报月报 |
+| [事件归组与关系评测](docs/grouping.md) | 事件关系判断与成对样本评测 |
+| [综述评测](docs/story-digest-evaluation.md) | 事件综述提示词的并排比较 |
+| [部署](docs/deploy.md) | Docker、域名与 HTTPS、中国大陆、更新、备份 |
+| [部署到 Dokploy](docs/deploy-dokploy.md) | Dokploy + Traefik + Cloudflare 的完整步骤 |
+| [架构](docs/architecture.md) | 三个进程、目录、数据库迁移、对外出口、测试 |
 
-技术栈：Node.js 24 · TypeScript · React Router（服务端渲染）· Fastify · PostgreSQL · pg-boss · Tailwind CSS · Docker Compose。
+技术栈：Node.js 24 · TypeScript · React Router（服务端渲染）· Fastify · PostgreSQL 17 · pg-boss · Tailwind CSS · Docker Compose。
 
-## 交流与贡献
+## 许可与来源
 
-部署和使用问题到 [问答区](https://github.com/KKKKhazix/AIHOT/discussions/categories/q-a)，新想法到 [想法交流区](https://github.com/KKKKhazix/AIHOT/discussions/categories/ideas)，欢迎在 [作品展示区](https://github.com/KKKKhazix/AIHOT/discussions/categories/show-and-tell) 分享你做出的行业热点站。
+代码使用 [MIT 许可证](LICENSE)。字体有自己的许可，见 [NOTICE](NOTICE)。
 
-发现 Bug 或有明确的功能建议，可以 [提交 Issue](https://github.com/KKKKhazix/AIHOT/issues/new/choose)。准备改代码前，先看 [贡献说明](CONTRIBUTING.md)；安全漏洞请走 [私密报告入口](SECURITY.md)。
-
-## 最后
-
-AIHOT 曾经只是我无数个深夜里，一个很小、很小的念头。
-
-我不知道它会被改成什么样子，会走到多远的地方。但这可能就是开源最浪漫的地方。
-
-剩下的路，就交给你们了。
-
-<p align="right">—— 数字生命卡兹克</p>
-
-## 许可
-
-代码使用 [MIT 许可证](LICENSE)。AIHOT 的名字和 Logo 不在许可范围内。字体有自己的许可，见 [NOTICE](NOTICE)。
+本站的引擎来自 [AIHOT](https://github.com/KKKKhazix/AIHOT) 开源项目（MIT）。站名、Logo、信源名单、分类体系和行业内容均为本站自己的配置；上游项目的名字和 Logo 不属于本站品牌，也不在本站使用。
