@@ -5,7 +5,7 @@ Dokploy 用 Traefik 管域名和 HTTPS，本项目的 `docker-compose.yml` 同�
 | 方式 | 谁做反向代理 | `.env` 关键配置 |
 |---|---|---|
 | 本机 / VPS 直接用 Caddy | Caddy（`https` profile） | `COMPOSE_PROFILES=https`、`PORT=3000` |
-| Dokploy | Dokploy 的 Traefik | `COMPOSE_PROFILES=`（留空）、`PORT=127.0.0.1:3000` |
+| Dokploy | Dokploy 的 Traefik | `COMPOSE_PROFILES=`（留空）、`PORT=127.0.0.1:3010`（或其它空闲端口） |
 
 两种方式都保留 `db`、`setup`、`api`、`worker`、`web` 五个服务；Caddy 服务也保留，只是 Dokploy 下不启动。数据库和 API 不发布端口。
 
@@ -26,8 +26,9 @@ SITE_URL=https://hot.example.com
 TRUST_PROXY=true
 
 # Dokploy 模式：不启动 Caddy；网页端口只监听本机，Traefik 从容器网络访问 3000
+# 3000 被宿主机上别的项目占用时，换成空闲端口，例如 127.0.0.1:3010
 COMPOSE_PROFILES=
-PORT=127.0.0.1:3000
+PORT=127.0.0.1:3010
 
 POSTGRES_PASSWORD=<32 位以上随机串>
 ADMIN_PASSWORD=<至少 12 位>
@@ -47,7 +48,7 @@ MODEL_CALLS_ENABLED=false
 几个容易出错的点：
 
 - `COMPOSE_PROFILES` 必须是空值。如果写成 `https`，Caddy 会抢占 80/443，和 Dokploy 的 Traefik 冲突。
-- `PORT=127.0.0.1:3000` 仍然保留端口映射，但只绑定本机；Dokploy 的 Traefik 通过 Compose 网络访问 `web:3000`，不依赖这个发布端口。
+- `PORT=127.0.0.1:3010`（或其它空闲端口） 仍然保留端口映射，但只绑定本机；Dokploy 的 Traefik 通过 Compose 网络访问 `web:3000`，不依赖这个发布端口。
 - 站点在 HTTPS 后面，`SITE_URL` 必须写 `https://`，`TRUST_PROXY=true`，否则后台登录 cookie 和限流取到的客户端地址会不对。
 - 安全阀（`COLLECT_ENABLED`、`MODEL_CALLS_ENABLED`、`FEISHU_*`、`INDEXNOW_*`、`BAIDU_PUSH_*`）只有写成 `true` 才打开。
 
@@ -112,6 +113,12 @@ DB_BACKUP_STORE_DOMAIN=<account>.r2.cloudflarestorage.com
 ## 7. 与 Caddy 模式互相切换
 
 - 切回 Caddy：`.env` 改 `COMPOSE_PROFILES=https`、`PORT=3000`，重新部署，并在 Dokploy 里停用该域名的 Traefik 路由（或直接改用非 Dokploy 的机器）。
-- 切到 Dokploy：`.env` 改 `COMPOSE_PROFILES=`、`PORT=127.0.0.1:3000`，重新部署。
+- 切到 Dokploy：`.env` 改 `COMPOSE_PROFILES=`、`PORT=127.0.0.1:3010`（或其它空闲端口），重新部署。
 
 Caddy 的服务定义、`profiles` 和网页端口映射都保留在 `docker-compose.yml` 里，不需要删。
+
+## 8. 常见错误
+
+- **`failed to bind host port for 127.0.0.1:3000 ... address already in use`**：宿主机 3000 已被别的项目占用（Dokploy 的项目列表里能看到）。把 `.env` 的 `PORT` 换成另一个空闲端口，例如 `127.0.0.1:3010`，重新部署。容器内端口和 Dokploy 域名配置仍是 3000，不需要改。
+- **域名 502**：先确认 `web` 容器是 Running；再确认 Dokploy 的 Domain 指向 `web` 的 3000 端口；如果 Dokploy 没自动接入网络，把 `web` 服务加入 `dokploy-network`。
+- **`setup` 退出但 api/worker 没起来**：看 `setup` 的日志，通常是数据库密码或迁移失败；`setup` 必须以 0 退出，后面的服务才会启动。

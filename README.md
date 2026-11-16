@@ -128,7 +128,7 @@ MODEL_CALLS_ENABLED=false
 项目同时保留两种部署方式，用 `.env` 切换，不需要删 Caddy 或端口映射：
 
 - **本机 / VPS 用 Caddy**：`COMPOSE_PROFILES=https`、`PORT=3000`
-- **Dokploy（Traefik 管域名和 HTTPS）**：`COMPOSE_PROFILES=` 留空、`PORT=127.0.0.1:3000`
+- **Dokploy（Traefik 管域名和 HTTPS）**：`COMPOSE_PROFILES=` 留空、`PORT=127.0.0.1:3010`（换成宿主机上空闲的端口；容器内仍是 3000）
 
 完整步骤见 [部署到 Dokploy](docs/deploy-dokploy.md)；Docker、域名、HTTPS、备份和直接跑 Node 见 [部署](docs/deploy.md)。
 
