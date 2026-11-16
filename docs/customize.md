@@ -33,6 +33,7 @@
 - **`industry/topics.json`**（主题目录 `/topics`）：站点启动时读取，改完重新构建（`docker compose up -d --build`）生效。分 `company`（公司与机构）、`field`（方向）、`genre`（内容形态）三组，`slug` 上线后不要改：
   - `company` 主题用 `entityId`（`ENTITIES` 的 id）收以这家公司为主体的报道；一篇报道的主体有几家公司时，标题里点了它的名才算。可选 `aliases`：搜索框里只搜这个词，也能找出这家公司的报道。
   - `field` 和 `genre` 主题用 `tags` 收打了这些标签的报道。
+- **二级分类与展会日历**：`SUBCATEGORIES` 把每个一级分类映射到几个 `{ key, label, tag }`，二级页 `/category/<类别>/<key>` 就是“类别 + 该标签”的合集；`key` 上线后不改，`label` 默认与 `tag` 同名。`industry/events.json` 是展会日历（`/events`），只收录核实过日期和场馆的展会，文件顶部的 `checkedAt` 是最近一次核对日期，每个条目带官网 `source`；没有核实日期的活动不要写进去。
 
 ## 3. 信源：`industry/sources.json`
 

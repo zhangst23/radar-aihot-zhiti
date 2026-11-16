@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { NAV, subjectAfter, withSubject } from "@aihot/site";
 import { webModules } from "../../site-modules";
 import {
-  IconBolt, IconBookmark, IconDoc, IconFlame, IconGrid, IconHeart, IconHistory, IconList, IconMessage, IconPlug, IconUser,
+  IconBolt, IconBookmark, IconCalendar, IconDoc, IconFlame, IconGrid, IconHeart, IconHistory, IconList, IconMessage, IconPlug, IconTag, IconUser,
 } from "../icons";
 
 export interface NavItem {
@@ -27,7 +27,9 @@ const SECTIONS: Array<{ title: string; items: NavItem[] }> = [
       { to: "/all", label: subjectAfter("全部", "动态"), icon: IconList },
       { to: "/hot", label: "热点榜", icon: IconFlame },
       { to: "/daily", label: withSubject("日报"), icon: IconDoc, covers: ["/weekly", "/monthly"] },
+      { to: "/categories", label: "品类", icon: IconTag, covers: ["/category"] },
       { to: "/topics", label: "主题", icon: IconGrid },
+      { to: "/events", label: "展会", icon: IconCalendar },
       { to: "/starred", label: "收藏", icon: IconBookmark },
     ],
   },
@@ -48,6 +50,8 @@ export const inNav = (to: string) => !(NAV.hidden as readonly string[]).includes
 const UP = {
   "/hot": { name: "热点榜", back: "热点", tab: "hot" },
   "/topics": { name: "主题", back: "全部主题", tab: "me" },
+  "/categories": { name: "品类", back: "全部品类", tab: "me" },
+  "/events": { name: "展会", back: "展会日历", tab: "events" },
 } as const;
 
 /**
@@ -122,6 +126,7 @@ const ENGINE_TABS: Tab[] = [
   { key: "featured", to: "/", label: "精选", icon: IconBolt },
   { key: "hot", to: "/hot", label: "热点", icon: IconFlame },
   { key: "daily", to: "/daily", label: "日报", icon: IconDoc, covers: ["/weekly", "/monthly"] },
+  { key: "events", to: "/events", label: "展会", icon: IconCalendar },
   { key: "me", to: "/more", label: "我的", icon: IconUser, changelog: true },
 ];
 

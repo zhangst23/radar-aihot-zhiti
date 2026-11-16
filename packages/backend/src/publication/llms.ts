@@ -119,6 +119,8 @@ export function llmsTxt(opts: {
   if (opts.hasWeekly) lines.push(`- [${withSubject("周报")}](${u("/weekly")}): ${REPORTS.descriptions.weekly}（含往期）；也可用 /api/v1/weeklies、给 Agent 的 /api/v1/agent/weekly、MCP 工具 ${T.weekly} 读取，或用 /feed/weekly.xml 订阅`);
   if (opts.hasMonthly) lines.push(`- [${withSubject("月报")}](${u("/monthly")}): ${REPORTS.descriptions.monthly}（含往期）；也可用 /api/v1/monthlies、给 Agent 的 /api/v1/agent/monthly、MCP 工具 ${T.monthly} 读取，或用 /feed/monthly.xml 订阅`);
   lines.push(`- [主题](${u("/topics")}): 按${TOPIC_GROUPS.map((g) => g.name).join("、")}${subjectAfter("追踪", "最新动态")}${opts.topics.length ? `（${opts.topics.length} 个主题，下一节逐个列出）` : ""}`);
+  lines.push(`- [品类](${u("/categories")}): 按一级分类和二级入口浏览最新报道，只列出有内容的页面`);
+  lines.push(`- [${withSubject("展会日历")}](${u("/events")}): 已核实的国际原料展会日期、城市、场馆与官网`);
   lines.push(...opts.modules.pages);
   if (opts.topics.length) {
     lines.push("", `## 主题：各公司与${field}的最新动态`, "");

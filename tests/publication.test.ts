@@ -50,7 +50,7 @@ async function article(): Promise<string> {
     sourceId: SOURCE, url: `https://example.com/${T}-${n}`, title: `Test ${n}`, bodyText: BODY, bodyHtml: `<p>${BODY}</p>`, bodyStatus: "ok", via: "fetch", publishedAt: minuteAgo, discoveredAt: minuteAgo,
   });
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
-            VALUES (${articleId}, 1, 'rule', 'pass', 'ai-models', ${`标题${n}-${T}`}, ${`SUMMARY-${n}-${T}`}, '理由', 90, true)`;
+            VALUES (${articleId}, 1, 'rule', 'pass', 'regulatory', ${`标题${n}-${T}`}, ${`SUMMARY-${n}-${T}`}, '理由', 90, true)`;
   return articleId;
 }
 
@@ -658,7 +658,7 @@ test("suppressOriginal keeps compliant Chinese copy selected while withholding r
     discoveredAt: minuteAgo,
   });
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
-            VALUES (${webId}, 1, 'rule', 'pass', 'ai-models', ${`初版标题-${T}`}, ${`初版摘要-${T}`}, '推荐理由', 91, true,
+            VALUES (${webId}, 1, 'rule', 'pass', 'regulatory', ${`初版标题-${T}`}, ${`初版摘要-${T}`}, '推荐理由', 91, true,
                     ${sql.json({ scope: "single", fact: { subject: "Lab", action: "released", object: "Model", conditions: rawToken, occurredAt: null, title: cleanTitle, evidence: rawToken } })})`;
   await sql`INSERT INTO translations (article_id, lang, revision, title, body_html, body_text, complete, origin)
             VALUES (${webId}, 'zh', 1, ${cleanTitle}, ${`<p>译文 ${rawBody}</p>`}, ${`译文 ${rawBody}`}, true, 'model')`;
@@ -761,7 +761,7 @@ test("suppressOriginal keeps compliant Chinese copy selected while withholding r
     } as never,
   });
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
-            VALUES (${xId}, 1, 'model', 'pass', 'ai-products', ${`X合规标题-${T}`}, ${`X合规摘要-${T}`}, '理由', 88, true,
+            VALUES (${xId}, 1, 'model', 'pass', 'market', ${`X合规标题-${T}`}, ${`X合规摘要-${T}`}, '理由', 88, true,
                     ${sql.json({ suppressOriginal: true })})`;
   await sql`UPDATE articles SET grouping_status = 'complete' WHERE id = ${xId}`;
   await publishArticle(xId, released());
@@ -821,7 +821,7 @@ test("restoring normal display after a clean update never re-exposes pre-suppres
     discoveredAt: minuteAgo,
   });
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
-            VALUES (${articleId}, 1, 'model', 'pass', 'ai-models', ${`初版未压制标题-${T}`}, ${`初版摘要-${T}`}, '理由', 92, true)`;
+            VALUES (${articleId}, 1, 'model', 'pass', 'regulatory', ${`初版未压制标题-${T}`}, ${`初版摘要-${T}`}, '理由', 92, true)`;
   await sql`UPDATE articles SET grouping_status = 'complete' WHERE id = ${articleId}`;
   await publishArticle(articleId, released());
 
@@ -830,20 +830,20 @@ test("restoring normal display after a clean update never re-exposes pre-suppres
   await sql`INSERT INTO articles (id, source_id, identity_key, url, title, grouping_status, discovered_at, timeline_at, published_at)
             VALUES (${lowId}, ${SOURCE}, ${lowId}, ${`https://example.com/${lowId}`}, 'Anchor first', 'complete', ${minuteAgo}, ${minuteAgo}, ${minuteAgo})`;
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
-            VALUES (${lowId}, 1, 'model', 'pass', 'ai-models', 'Anchor first zh', '摘要', '理由', 90, true)`;
+            VALUES (${lowId}, 1, 'model', 'pass', 'regulatory', 'Anchor first zh', '摘要', '理由', 90, true)`;
   await publishArticle(lowId, released());
   const v1Page1 = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1")).body);
   assert.ok(v1Page1.nextPage);
 
   // v2: downgraded to suppressOriginal = true.
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
-            VALUES (${articleId}, 1, 'model', 'pass', 'ai-models', ${cleanZhV2}, ${`压制期摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: true })})`;
+            VALUES (${articleId}, 1, 'model', 'pass', 'regulatory', ${cleanZhV2}, ${`压制期摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: true })})`;
   await publishArticle(articleId, released());
 
   // v3: source updates its raw title/body to clean text, passes review, and restores suppressOriginal = false.
   await sql`UPDATE articles SET revision = 2, title = ${cleanRawTitle}, body_text = 'clean updated body', body_html = '<p>clean updated body</p>' WHERE id = ${articleId}`;
   await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
-            VALUES (${articleId}, 2, 'model', 'pass', 'ai-models', ${cleanZhV3}, ${`更新后摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: false })})`;
+            VALUES (${articleId}, 2, 'model', 'pass', 'regulatory', ${cleanZhV3}, ${`更新后摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: false })})`;
   await publishArticle(articleId, released());
 
   const [pubAfter] = await sql<{ suppress_original: boolean; original_title: string | null }[]>`

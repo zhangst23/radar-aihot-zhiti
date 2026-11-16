@@ -28,7 +28,7 @@ import { dateLine } from "../apps/web/app/features/report/format.ts";
 import { startWebServer, type WebServer } from "../apps/web/tests/web-server.ts";
 
 const at = "2026-10-04T08:00:00.000Z";
-const item: FeedItemSummary = { id: "metadata-fixture", title: "可核实的测试报道", summary: "报道摘要", reason: null, source: { name: "Fixture" }, publishedAt: at, timelineAt: at, category: "ai-models", tags: [], score: 80, selected: true, channel: "news", x: null };
+const item: FeedItemSummary = { id: "metadata-fixture", title: "可核实的测试报道", summary: "报道摘要", reason: null, source: { name: "Fixture" }, publishedAt: at, timelineAt: at, category: "regulatory", tags: [], score: 80, selected: true, channel: "news", x: null };
 const detail: SiteItemDetail = { ...item, x: null, originalTitle: null, links: { original: "https://example.org/report" }, discoveredAt: at, story: null, readingMode: "full", author: null, body: { zh: "<p>可核实的测试正文。</p>", original: null, zhKind: "original", complete: true }, outline: [], relatedStories: [], topics: [], tagTopics: {}, daily: null, indexable: true, googleNoindex: false, markdownAvailable: true, group: null, hasTranslation: false, bodyLanguage: "zh", mentions: [] };
 /** Article pages by id: the fixture, one kept from Google only, one kept from every engine. */
 const details: Record<string, SiteItemDetail> = {
@@ -40,7 +40,7 @@ const details: Record<string, SiteItemDetail> = {
 const citation = (available: boolean): ReportCitation => ({ itemId: available ? item.id : "withdrawn", title: available ? item.title : "已撤下的旧头条", summary: item.summary, sourceName: item.source.name, sourceUrl: detail.links.original, sourceIconUrl: null, firstParty: true, publishedAt: at, available });
 /** A daily whose one entry was withdrawn: its highlights are only the reports a thin issue is filled with. */
 const leadless = (): ReportDetail => ({ ...report("daily"), key: "2026-10-05", lead: null, leadItemId: null,
-  sections: [{ label: "模型", summary: null, items: [citation(false)] }], highlights: [{ ...citation(true), itemId: "metadata-pick", title: "同一时段值得一看的报道" }] });
+  sections: [{ label: "法规监管", summary: null, items: [citation(false)] }], highlights: [{ ...citation(true), itemId: "metadata-pick", title: "同一时段值得一看的报道" }] });
 const report = (kind: ReportKind): ReportDetail => ({ kind, key: kind === "daily" ? "2026-10-04" : kind === "weekly" ? "2026-W40" : "2026-10", issueNumber: 1, title: `${SITE.name} 测试刊物`, generatedAt: at, lead: { title: "本期已验证的重要变化", leadParagraph: "本期的导读与依据。" }, leadItemId: item.id, overview: null, highlights: [citation(true)], sections: [], flashes: [], cover: null, metrics: {}, readingMinutes: 1, prev: null, next: null, mentions: [] });
 const story: StoryDetail = { publicId: "metadata-story", title: "测试事件的最新进展", status: "settled", reportCount: 1, sourceCount: 1, firstReportAt: at, latestAt: at, digest: "当前可核实的事件综述。", digestUpdatedAt: "2026-10-04T09:00:00.000Z", summary: null, excerpt: null, latest: null, latestReport: null, whyHot: { participants48h: 0, newParticipants6h: 0, recentReports24h: 0, observationComplete: true, rank: null }, developments: [], officialReports: [], timeline: [{ id: item.id, title: item.title, summary: item.summary, source: { name: item.source.name, firstParty: true }, publishedAt: at, selected: true }], heat: [], related: [], topics: [], mentions: [] };
 /** The same event once a second report joined it. */
@@ -85,15 +85,16 @@ function structured($: cheerio.CheerioAPI): Array<Record<string, unknown>> {
 }
 
 test("filtered feeds keep their exact content address but leave indexing to the public landing pages", async () => {
-  for (const base of ["/", "/all"]) for (const query of ["channel=news", "category=ai-models", "tag=Agent", "channel=x&category=paper&tag=Agent"]) {
+  const filterTag = encodeURIComponent("植物提取物");
+  for (const base of ["/", "/all"]) for (const query of ["channel=news", "category=regulatory", `tag=${filterTag}`, `channel=x&category=research&tag=${filterTag}`]) {
     const $ = await page(`${base}?${query}&utm_source=fixture&anchorAt=old&deep=1`);
     assert.equal($("meta[name=robots]").attr("content"), "noindex, follow", `${base}?${query}`);
     assert.equal($("link[rel=canonical]").attr("href"), `${web.origin}${base}?${query}`);
     assert.ok($("main").text().includes(item.title));
   }
-  const $ = await page("/all?q=Claude&tab=relevance&page=2&anchorAt=old");
+  const $ = await page("/all?q=Sederma&tab=relevance&page=2&anchorAt=old");
   assert.equal($("meta[name=robots]").attr("content"), "noindex, follow");
-  assert.equal($("link[rel=canonical]").attr("href"), `${web.origin}/all?q=Claude&tab=relevance&page=2`);
+  assert.equal($("link[rel=canonical]").attr("href"), `${web.origin}/all?q=Sederma&tab=relevance&page=2`);
 });
 
 test("ordinary feed pages remain indexable and normalize ignored parameters", async () => {
@@ -168,7 +169,7 @@ test("an issue's date reads as Chinese readers write it, across months and years
 
 test("a report without an edited lead uses only a still-public visible highlight", () => {
   // An issue's highlights are among its entries; the ones a thin daily is filled with never head it (above).
-  const r = { ...report("weekly"), lead: null, highlights: [citation(false), citation(true)], sections: [{ label: "模型", summary: null, items: [citation(false), citation(true)] }] };
+  const r = { ...report("weekly"), lead: null, highlights: [citation(false), citation(true)], sections: [{ label: "法规监管", summary: null, items: [citation(false), citation(true)] }] };
   assert.match(reportLd(r, "/weekly/2026-W40", "导读").headline, new RegExp(item.title));
   assert.doesNotMatch(reportLd(r, "/weekly/2026-W40", "导读").headline, /已撤下/);
 });

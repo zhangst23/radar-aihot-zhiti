@@ -524,3 +524,100 @@ export interface TopicPage {
   pageCount: number;
   pageSize: number;
 }
+
+/** One second-level entry under an industry category: the category plus one topic tag. */
+export interface SubcategorySummary {
+  key: string;
+  label: string;
+  /** The topic tag every report on the subcategory page carries. */
+  tag: string;
+  /** Selected reports in the last 30 days. */
+  recent: number;
+  /** Every listed report (the pool's browse scope). */
+  total: number;
+  /** Enough content for a page of its own to be listed and indexed. */
+  indexable: boolean;
+}
+
+export interface CategorySummary {
+  key: CategoryKey;
+  label: string;
+  /** The daily report's section heading. */
+  section: string;
+  /** What the category covers, from the industry pack. */
+  definition: string;
+  /** Every listed report. */
+  total: number;
+  /** Selected reports in the last 30 days. */
+  recent: number;
+  indexable: boolean;
+  subcategories: SubcategorySummary[];
+}
+
+export interface CategoryIndexResponse {
+  categories: CategorySummary[];
+}
+
+export interface CategoryPageResponse {
+  category: CategorySummary;
+  subcategory: SubcategorySummary | null;
+  items: FeedItemSummary[];
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  total: number;
+}
+
+export type EventStatus = "upcoming" | "ongoing" | "past";
+
+/** One trade show from the verified calendar (industry/events.json). */
+export interface IndustryEventSummary {
+  id: string;
+  name: string;
+  /** Inclusive YYYY-MM-DD dates. */
+  start: string;
+  end: string;
+  city: string;
+  country: string;
+  venue: string | null;
+  /** A date nuance the official page states (education days before the show floor). */
+  note: string | null;
+  categories: CategoryKey[];
+  website: string;
+  status: EventStatus;
+}
+
+export interface EventsResponse {
+  /** The day the organisers' pages were checked. */
+  checkedAt: string;
+  events: IndustryEventSummary[];
+  total: number;
+  /** The countries in the whole calendar, for the filter select (not only the current answer). */
+  countries: string[];
+}
+
+/** The home page's modules, all counted from the public read layer at read time. */
+export interface HomeOverview {
+  stats: {
+    today: number;
+    week: number;
+    regulatory: number;
+    supply: number;
+    launches: number;
+    upcomingEvents: number;
+  };
+  breaking: FeedItemSummary[];
+  regulatory: FeedItemSummary[];
+  supply: FeedItemSummary[];
+  innovation: FeedItemSummary[];
+  companies: Array<{
+    slug: string;
+    name: string;
+    /** Listed reports about the company in the last 30 days. */
+    count: number;
+    latest: { title: string; at: string } | null;
+  }>;
+  /** Topic tags gaining mentions this week, with the week before for comparison. */
+  trending: Array<{ tag: string; recent: number; previous: number }>;
+  events: IndustryEventSummary[];
+}

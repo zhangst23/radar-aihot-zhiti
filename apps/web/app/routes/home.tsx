@@ -1,7 +1,7 @@
 import { redirect, useLoaderData } from "react-router";
 import { SITE } from "@aihot/site";
 import type { Route } from "./+types/home";
-import type { TimelineResponse } from "@aihot/contracts/site";
+import type { TimelineResponse, HomeOverview } from "@aihot/contracts/site";
 import { cachedPage, loadOr404 } from "../lib/api.server";
 import { pageReuse } from "../lib/page-reuse";
 import { filterParams, hasFeedFilters, itemListLd, listPath, pageMeta, readFilters, siteLd } from "../lib/seo";
@@ -9,11 +9,17 @@ import { inNav } from "../components/shell/nav";
 import type { Screen } from "../components/shell/screens";
 import { Timeline } from "../features/feed/Timeline";
 import { HotTopics } from "../features/feed/HotTopics";
+import { HomeOverviewModules } from "../features/home/Overview";
 import { ActiveFilters, CategoryTabs, FeedBar, SearchField } from "../features/feed/Filters";
 
 export const handle: Screen = { tab: "featured", name: "精选" };
 export { pageHeaders as headers } from "../lib/api.server";
 export const { clientLoader, shouldRevalidate } = pageReuse<typeof loader>();
+
+const EMPTY_OVERVIEW: HomeOverview = {
+  stats: { today: 0, week: 0, regulatory: 0, supply: 0, launches: 0, upcomingEvents: 0 },
+  breaking: [], regulatory: [], supply: [], innovation: [], companies: [], trending: [], events: [],
+};
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -22,9 +28,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (q && q.trim()) throw redirect(`/all${url.search}`);
   const filters = readFilters(url.searchParams);
   const upstream = new Headers();
-  const data = await loadOr404<TimelineResponse>(listPath("/api/site/timeline", filterParams(filters)), { responseHeaders: upstream, signal: request.signal });
+  const [data, overview] = await Promise.all([
+    loadOr404<TimelineResponse>(listPath("/api/site/timeline", filterParams(filters)), { responseHeaders: upstream, signal: request.signal }),
+    // The modules are an addition to the feed: an API that cannot answer leaves the feed usable.
+    loadOr404<HomeOverview>("/api/site/overview", { signal: request.signal }).catch((error) => {
+      if (request.signal.aborted) throw error;
+      return EMPTY_OVERVIEW;
+    }),
+  ]);
   // A minute at most, here and on /all: new selections must not wait longer at the edge or in a browser.
-  return cachedPage(60, { data, filters }, upstream);
+  return cachedPage(60, { data, overview, filters }, upstream);
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -37,7 +50,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { data, filters } = useLoaderData<typeof loader>();
+  const { data, overview, filters } = useLoaderData<typeof loader>();
   const title = filters.tag ? `#${filters.tag}` : "精选";
   return (
     <div className="pb-6">
@@ -51,6 +64,8 @@ export default function Home() {
           <SearchField keep={{ category: filters.category }} />
         </div>
       </div>
+
+      {!filters.category && !filters.tag && filters.channel === "all" && <HomeOverviewModules data={overview} />}
 
       {data.hot && inNav("/hot") && <HotTopics entries={data.hot} />}
 

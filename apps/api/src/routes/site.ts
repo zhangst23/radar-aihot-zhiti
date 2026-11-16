@@ -8,6 +8,9 @@ import { exportMarkdown, loadItemDetail } from "@aihot/backend/publication/detai
 import { itemUrl } from "@aihot/backend/publication/links";
 import { loadPool, SearchBusyError } from "@aihot/backend/publication/pool";
 import { loadTimeline } from "@aihot/backend/publication/timeline";
+import { loadCategoryIndex, loadCategoryPage } from "@aihot/backend/publication/categories";
+import { isIsoDate, listEvents } from "@aihot/backend/publication/events";
+import { loadHomeOverview } from "@aihot/backend/publication/overview";
 import { loadStoryFollowups } from "@aihot/backend/publication/followups";
 import { loadGroupReports } from "@aihot/backend/publication/groups";
 import { hotSearchLinks, loadHotStrip } from "@aihot/backend/publication/hot";
@@ -135,6 +138,56 @@ export function registerSite(app: FastifyInstance) {
 
   app.get("/api/site/topics", siteHandler(async (req, reply) => {
     return sendJsonWithEtag(req, reply, await listTopicSummaries(), { etagPrefix: "topics", cacheControl: "public, max-age=300, s-maxage=300" });
+  }));
+
+  app.get("/api/site/overview", siteHandler(async (req, reply) => {
+    return sendJsonWithEtag(req, reply, await loadHomeOverview(), { etagPrefix: "overview", cacheControl: "public, max-age=60, s-maxage=60" });
+  }));
+
+  app.get("/api/site/categories", siteHandler(async (req, reply) => {
+    return sendJsonWithEtag(req, reply, await loadCategoryIndex(), { etagPrefix: "categories", cacheControl: "public, max-age=300, s-maxage=300" });
+  }));
+
+  app.get("/api/site/categories/:category", siteHandler(async (req, reply) => {
+    const category = (req.params as { category: string }).category;
+    if (!isCategoryKey(category)) throw new BadRequest("invalid category");
+    const page = Math.min(Math.max(Number(looseQuery(req).page) || 1, 1), 50);
+    const data = await loadCategoryPage(category, null, page);
+    if (!data || (page > 1 && page > data.pageCount)) return sendProblem(req, reply, { status: 404, code: "not_found", detail: "category page not found", cacheControl: "public, max-age=60" });
+    return sendJsonWithEtag(req, reply, data, { etagPrefix: "category", cacheControl: "public, max-age=60, s-maxage=60" });
+  }));
+
+  app.get("/api/site/categories/:category/:sub", siteHandler(async (req, reply) => {
+    const { category, sub } = req.params as { category: string; sub: string };
+    if (!isCategoryKey(category)) throw new BadRequest("invalid category");
+    const page = Math.min(Math.max(Number(looseQuery(req).page) || 1, 1), 50);
+    const data = await loadCategoryPage(category, sub, page);
+    if (!data || (page > 1 && page > data.pageCount)) return sendProblem(req, reply, { status: 404, code: "not_found", detail: "category page not found", cacheControl: "public, max-age=60" });
+    return sendJsonWithEtag(req, reply, data, { etagPrefix: "category", cacheControl: "public, max-age=60, s-maxage=60" });
+  }));
+
+  app.get("/api/site/events", siteHandler(async (req, reply) => {
+    const q = looseQuery(req);
+    const scope = q.scope === "all" || q.scope === "past" ? q.scope : "upcoming";
+    let from = q.from ?? null;
+    let to = q.to ?? null;
+    if (q.month) {
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(q.month)) throw new BadRequest("invalid month");
+      const [year, month] = q.month.split("-").map(Number);
+      const lastDay = new Date(Date.UTC(year!, month!, 0)).getUTCDate();
+      from = `${q.month}-01`;
+      to = `${q.month}-${String(lastDay).padStart(2, "0")}`;
+    }
+    if ((from && !isIsoDate(from)) || (to && !isIsoDate(to))) throw new BadRequest("invalid date");
+    if (from && to && from > to) throw new BadRequest("invalid date range");
+    if (q.category && !isCategoryKey(q.category)) throw new BadRequest("invalid category");
+    const data = listEvents({
+      from, to, scope,
+      category: q.category ?? null,
+      country: q.country?.trim() || null,
+      q: q.q?.trim().slice(0, 100) || null,
+    });
+    return sendJsonWithEtag(req, reply, data, { etagPrefix: "events", cacheControl: "public, max-age=300, s-maxage=300" });
   }));
 
   app.get('/api/site/search/suggestions', siteHandler(async (req, reply) => {

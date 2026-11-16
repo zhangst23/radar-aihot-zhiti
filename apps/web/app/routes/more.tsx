@@ -13,7 +13,7 @@ import { setFontPreference, useFontPreference, useStarred } from "../lib/local-s
 import { Select } from "../components/ui/Controls";
 import { ThemeSwitch } from "../components/shell/ThemeSwitch";
 import { Filings } from "../components/shell/Filings";
-import { IconBookmark, IconChevronRight, IconGrid, IconHeart, IconMessage, IconMoon, IconPlug, IconSparkles } from "../components/icons";
+import { IconBookmark, IconChevronRight, IconGrid, IconHeart, IconMessage, IconMoon, IconPlug, IconSparkles, IconTag } from "../components/icons";
 
 export const handle: Screen = { tab: "me", name: "我的" };
 
@@ -37,6 +37,7 @@ const agentWays = () => [...webModules().flatMap((m) => m.agentWays ?? []), "MCP
 /** The modules' tools first, then the engine's. */
 const tools = (): Row[] => [
   ...webModules().flatMap((m) => m.tools ?? []),
+  ...(inNav("/categories") ? [{ to: "/categories", label: "品类", icon: <IconTag size={20} /> }] : []),
   ...(inNav("/topics") ? [{ to: "/topics", label: "主题", icon: <IconGrid size={20} /> }] : []),
   { to: "/agent", label: "Agent 接入", icon: <IconPlug size={20} />, detail: agentWays().slice(0, 3).join(" · ") },
 ];

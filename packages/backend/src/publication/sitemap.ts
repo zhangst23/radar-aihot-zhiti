@@ -18,6 +18,8 @@ import { siteUrl } from "./links.ts";
 import { evidenceCondition, listedCondition, selectedCondition, storyReportCondition } from "./scope.ts";
 import { storyTexts } from "./story-text.ts";
 import { topicPageCounts } from "./topics.ts";
+import { categoryPageCounts } from "./categories.ts";
+import { listEvents } from "./events.ts";
 import { serverModules, type SitemapEntry } from "../modules.ts";
 
 const MAX_URLS = 45_000;
@@ -63,6 +65,7 @@ export async function loadDiscoveryEntries(at = new Date(), limits?: { urls: num
     ) citations ON true ORDER BY r.kind, r.key DESC`;
   const reportRevision = (kind: string) => sha256(stableJson(reports.filter((r) => r.kind === kind)));
   const topics = await topicPageCounts(at, !limits);
+  const categoryCounts = await categoryPageCounts(at);
   entries.push(
     { loc: "/", revision: activity?.selected ?? "", changefreq: "hourly", priority: 1 },
     { loc: "/all", revision: activity?.listed ?? "", changefreq: "hourly", priority: 0.9 },
@@ -72,6 +75,8 @@ export async function loadDiscoveryEntries(at = new Date(), limits?: { urls: num
     { loc: "/weekly", revision: reportRevision("weekly"), changefreq: "weekly", priority: 0.7 },
     { loc: "/monthly", revision: reportRevision("monthly"), changefreq: "monthly", priority: 0.6 },
     { loc: "/topics", revision: sha256(stableJson(topics)), changefreq: "daily", priority: 0.7 },
+    { loc: "/categories", revision: sha256(stableJson(categoryCounts)), changefreq: "daily", priority: 0.7 },
+    { loc: "/events", revision: sha256(stableJson(listEvents({ scope: "all" }, at))), changefreq: "weekly", priority: 0.6 },
     { loc: "/agent", revision: sha256(stableJson([SITE, ACCESS, AGENT])), changefreq: "weekly", priority: 0.7 },
     { loc: "/about", revision: sha256(stableJson(ABOUT)), changefreq: "monthly", priority: 0.5 },
     { loc: "/terms", revision: sha256(stableJson([POLICY.terms, await readFile(path.join(REPO_ROOT, "site/pages/terms.md"), "utf8")])), changefreq: "monthly", priority: 0.4 },
@@ -85,6 +90,12 @@ export async function loadDiscoveryEntries(at = new Date(), limits?: { urls: num
     // A topic's archive pages are reached from the topic page, the one that stands for the topic in
     // search: the sitemap leaves them out, notifications still say when they change.
     if (!limits) for (let p = 2; p <= t.pages; p++) entries.push({ loc: `/topics/${t.slug}/page/${p}`, revision: t.revision });
+  }
+  // Category pages exist only with content; their archives are reached from the category page and are
+  // left out of the sitemap as topic archives are.
+  for (const c of categoryCounts) {
+    if (!c.indexable) continue;
+    entries.push({ loc: c.path, revision: c.revision, changefreq: "daily", priority: 0.6 });
   }
   // A story needs listed evidence of its own, and STORY_INDEX_MIN_REPORTS reports: with fewer its page is
   // noindex everywhere, so neither the sitemap nor notifications list it. Its identity follows current
