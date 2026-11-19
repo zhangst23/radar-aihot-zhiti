@@ -10,7 +10,7 @@
       "city": "法兰克福",
       "country": "德国",
       "venue": "Messe Frankfurt",
-      "categories": ["natural", "flavors", "food-additives", "functional"],
+      "categories": ["natural", "food-additives", "functional"],
       "website": "https://www.figlobal.com/europe/",
       "source": "https://www.figlobal.com/europe/"
     },
@@ -131,7 +131,7 @@
       "city": "上海",
       "country": "中国",
       "venue": "National Exhibition and Convention Center",
-      "categories": ["natural", "flavors", "food-additives", "functional"],
+      "categories": ["natural", "food-additives", "functional"],
       "website": "https://www.figlobal.com/china/",
       "source": "https://www.figlobal.com/china/"
     },
@@ -155,7 +155,7 @@
       "city": "曼谷",
       "country": "泰国",
       "venue": "Queen Sirikit National Convention Center",
-      "categories": ["natural", "flavors", "food-additives", "functional"],
+      "categories": ["natural", "food-additives", "functional"],
       "website": "https://www.figlobal.com/asia-thailand/",
       "source": "https://www.figlobal.com/asia-thailand/"
     },
