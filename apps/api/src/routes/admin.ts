@@ -17,6 +17,7 @@ import { releaseReceipt } from "@aihot/backend/operations/recover";
 import { replaceContactQr, setTargetEnabled, settingsOverview, updateBudget } from "@aihot/backend/admin/settings";
 import { createSource, fetchNow, listSources, previewSource, previewStoredSource, sourceDetail, updateSource } from "@aihot/backend/admin/sources";
 import { adminEvents, createEvent, deleteEvent, updateEvent } from "@aihot/backend/admin/events";
+import { adminRankings, collectRankingNow, createRanking, deleteRanking, updateRanking } from "@aihot/backend/admin/rankings";
 import { sendProblem } from "../http/respond.ts";
 import { adminHandler } from "./admin-auth.ts";
 
@@ -62,6 +63,16 @@ export function registerAdmin(app: FastifyInstance) {
     const done = await deleteEvent(param(req, "id"), actorOf(admin));
     return done ? { ok: true } : notFound(req, reply);
   }));
+
+  // 专题 · 亚马逊榜单
+  app.get("/api/admin/rankings", adminHandler(async () => ({ lists: await adminRankings() })));
+  app.post("/api/admin/rankings", adminHandler(async (req, _reply, admin) => createRanking(body(req), actorOf(admin))));
+  app.patch("/api/admin/rankings/:id", adminHandler(async (req, reply, admin) => orNotFound(req, reply, await updateRanking(param(req, "id"), body(req), actorOf(admin)))));
+  app.delete("/api/admin/rankings/:id", adminHandler(async (req, reply, admin) => {
+    const done = await deleteRanking(param(req, "id"), actorOf(admin));
+    return done ? { ok: true } : notFound(req, reply);
+  }));
+  app.post("/api/admin/rankings/:id/collect", adminHandler(async (req, reply, admin) => orNotFound(req, reply, await collectRankingNow(param(req, "id"), actorOf(admin)))));
 
   // Content and events
   app.get("/api/admin/content", adminHandler(async (req) => ({ rows: await searchContent(q(req).q ?? "") })));

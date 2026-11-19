@@ -21,6 +21,7 @@ import { recoverStaleWork } from "@aihot/backend/operations/recover";
 import { forwardPendingFeedback } from "@aihot/backend/operations/feedback";
 import { backupConfigured, runBackup } from "@aihot/backend/operations/backup";
 import { sourceHealthWeekly } from "@aihot/backend/operations/reports";
+import { collectDueRankings } from "@aihot/backend/rankings/collect";
 
 const collecting = process.env.COLLECT_ENABLED === "true";
 
@@ -59,6 +60,8 @@ const ENGINE_SCHEDULES: Scheduled[] = [
         { name: "sources.x-renames", cron: "50 4 * * *", missed: "once" as const, run: () => followXRenames() },
         // Icons are read from the sources' own sites, so they stop with collection.
         { name: "sources.icons", cron: "40 4 * * *", missed: "once" as const, run: () => refreshSourceIcons() },
+        // 专题 · 亚马逊榜单：每个榜单按自己的间隔采集一次快照（默认每日 06:20），同样跟着采集开关。
+        { name: "rankings.collect", cron: "20 6 * * *", missed: "once" as const, run: () => collectDueRankings() },
       ]
     : []),
   // WeChat official accounts through Dajiala (paid), each once per its interval; only with its key.

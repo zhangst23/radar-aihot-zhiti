@@ -40,6 +40,7 @@ const nav = (): Array<{ group: string; items: AdminNavEntry[] }> => [
       { to: "/admin/content", label: "内容诊断" },
       { to: "/admin/sources", label: "信源", count: "sources", tone: "bad" },
       { to: "/admin/events", label: "展会" },
+      { to: "/admin/rankings", label: "亚马逊榜单" },
       { to: "/admin/feedback", label: "反馈", count: "feedback", tone: "accent" },
     ],
   },

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { NAV, subjectAfter, withSubject } from "@aihot/site";
 import { webModules } from "../../site-modules";
 import {
-  IconBolt, IconBookmark, IconCalendar, IconDoc, IconFlame, IconGrid, IconHeart, IconHistory, IconList, IconMessage, IconPlug, IconTag, IconUser,
+  IconBolt, IconBookmark, IconCalendar, IconChart, IconDoc, IconFlame, IconGrid, IconHeart, IconHistory, IconList, IconMessage, IconPlug, IconTag, IconUser,
 } from "../icons";
 
 export interface NavItem {
@@ -36,6 +36,7 @@ const SECTIONS: Array<{ title: string; items: NavItem[] }> = [
     title: "专题",
     items: [
       { to: "/events", label: "展会", icon: IconCalendar },
+      { to: "/rankings", label: "亚马逊榜单", icon: IconChart },
     ],
   },
   {
@@ -57,6 +58,7 @@ const UP = {
   "/topics": { name: "主题", back: "全部主题", tab: "me" },
   "/categories": { name: "品类", back: "全部品类", tab: "me" },
   "/events": { name: "展会", back: "展会日历", tab: "events" },
+  "/rankings": { name: "亚马逊榜单", back: "榜单", tab: "me" },
 } as const;
 
 /**

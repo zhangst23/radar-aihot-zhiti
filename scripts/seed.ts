@@ -74,4 +74,39 @@ for (const e of events) {
 console.log(
   `events: ${addedEvents} added, ${events.length - addedEvents} already there`,
 );
+
+// 专题 · 亚马逊榜单：四个默认榜单，同样只补缺失的，后台改过的不动。
+const RANKINGS = [
+  {
+    id: "amazon-beauty",
+    name: "美妆个护榜",
+    url: "https://www.amazon.com/Best-Sellers-Beauty-Personal-Care/zgbs/beauty/",
+  },
+  {
+    id: "amazon-sports-nutrition",
+    name: "运动营养榜",
+    url: "https://www.amazon.com/Best-Sellers-Health-Household-Diet-Sports-Nutrition/zgbs/hpc/3764441",
+  },
+  {
+    id: "amazon-weight-loss",
+    name: "减肥产品榜",
+    url: "https://www.amazon.com/Best-Sellers-Health-Household-Weight-Loss-Products/zgbs/hpc/3774931/",
+  },
+  {
+    id: "amazon-supplements",
+    name: "膳食补充剂",
+    url: "https://www.amazon.com/Best-Sellers-Health-Household-Vitamins-Minerals-Supplements/zgbs/hpc/23675621011/",
+  },
+];
+let addedRankings = 0;
+for (const [position, list] of RANKINGS.entries()) {
+  const inserted = await sql`
+    INSERT INTO ranking_lists (id, name, url, position, enabled, interval_minutes, next_fetch_at)
+    VALUES (${list.id}, ${list.name}, ${list.url}, ${position}, true, 1440, now())
+    ON CONFLICT (id) DO NOTHING RETURNING id`;
+  addedRankings += inserted.length;
+}
+console.log(
+  `rankings: ${addedRankings} added, ${RANKINGS.length - addedRankings} already there`,
+);
 await closeDb();

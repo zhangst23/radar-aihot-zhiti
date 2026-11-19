@@ -10,6 +10,7 @@ import { loadPool, SearchBusyError } from "@aihot/backend/publication/pool";
 import { loadTimeline } from "@aihot/backend/publication/timeline";
 import { loadCategoryIndex, loadCategoryPage } from "@aihot/backend/publication/categories";
 import { isIsoDate, listEvents } from "@aihot/backend/publication/events";
+import { loadRankings } from "@aihot/backend/publication/rankings";
 import { loadHomeOverview } from "@aihot/backend/publication/overview";
 import { loadStoryFollowups } from "@aihot/backend/publication/followups";
 import { loadGroupReports } from "@aihot/backend/publication/groups";
@@ -188,6 +189,11 @@ export function registerSite(app: FastifyInstance) {
       q: q.q?.trim().slice(0, 100) || null,
     });
     return sendJsonWithEtag(req, reply, data, { etagPrefix: "events", cacheControl: "public, max-age=300, s-maxage=300" });
+  }));
+
+  app.get("/api/site/rankings", siteHandler(async (req, reply) => {
+    const data = await loadRankings();
+    return sendJsonWithEtag(req, reply, data, { etagPrefix: "rankings", cacheControl: "public, max-age=300, s-maxage=300" });
   }));
 
   app.get('/api/site/search/suggestions', siteHandler(async (req, reply) => {

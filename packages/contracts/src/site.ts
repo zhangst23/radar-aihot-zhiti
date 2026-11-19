@@ -596,6 +596,32 @@ export interface EventsResponse {
   countries: string[];
 }
 
+/** 专题 · 亚马逊榜单：一个榜单的最新快照。 */
+export interface RankingItemSummary {
+  rank: number;
+  /** Yesterday's rank for the same ASIN, when the previous snapshot had it. */
+  previousRank: number | null;
+  asin: string | null;
+  title: string;
+  url: string;
+  price: string | null;
+  rating: string | null;
+  reviews: number | null;
+}
+
+export interface RankingListSummary {
+  id: string;
+  name: string;
+  url: string;
+  /** The day of the snapshot the items come from. */
+  collectedOn: string | null;
+  items: RankingItemSummary[];
+}
+
+export interface RankingsResponse {
+  lists: RankingListSummary[];
+}
+
 /** The home page's modules, all counted from the public read layer at read time. */
 export interface HomeOverview {
   stats: {
