@@ -59,8 +59,8 @@ export default function Home() {
       <ActiveFilters base="/" category={filters.category} channel={filters.channel} tag={filters.tag} />
       <div className="hidden lg:block">
         <h1 className="text-[24px] font-semibold leading-[1.3] text-ink">{title}</h1>
-        <div className="mb-5 mt-4 flex items-center justify-between gap-4">
-          <CategoryTabs base="/" category={filters.category} channel={filters.channel} layoutId="home-cat-desk" className="min-w-0" />
+        <div className="mb-5 mt-4 flex flex-wrap items-center justify-between gap-4">
+          <CategoryTabs base="/" category={filters.category} channel={filters.channel} layoutId="home-cat-desk" wrap className="min-w-0" />
           <SearchField keep={{ category: filters.category }} />
         </div>
       </div>

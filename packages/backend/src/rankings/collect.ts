@@ -4,6 +4,7 @@
 import { beijingDate } from "@aihot/contracts/time";
 import { sql } from "../db.ts";
 import { fetchListing } from "../sources/listing-fetch.ts";
+import { analyzeRankingDay } from "./analysis.ts";
 
 export interface RankingItem {
   rank: number;
@@ -75,7 +76,7 @@ export function parseBestSellers(html: string, base: string): RankingItem[] {
 }
 
 /** Reads one list and stores today's snapshot; a failure keeps the previous one and records why. */
-export async function collectRanking(list: RankingListRow, now = new Date()): Promise<{ saved: number; error: string | null }> {
+export async function collectRanking(list: RankingListRow, now = new Date()): Promise<{ saved: number; analyzed: number; error: string | null }> {
   const day = beijingDate(now);
   try {
     const res = await fetchListing(list.url, { timeoutMs: 30_000, maxBytes: 8 * 1024 * 1024, headers: BROWSER });
@@ -95,18 +96,20 @@ export async function collectRanking(list: RankingListRow, now = new Date()): Pr
     await sql`UPDATE ranking_lists SET last_fetched_at = now(), last_error = null,
                      next_fetch_at = now() + (${list.interval_minutes} * interval '1 minute'), updated_at = now()
               WHERE id = ${list.id}`;
-    return { saved: items.length, error: null };
+    // 选品分析紧跟采集；模型失败或关掉时不重试、也不影响这次快照。
+    const analysis = await analyzeRankingDay(list.id, day, list.name).catch(() => null);
+    return { saved: items.length, error: null, analyzed: analysis?.analyzed ?? 0 };
   } catch (error) {
     const message = String((error as Error).message).slice(0, 300);
     // A blocked or broken page is retried in six hours rather than at the next daily slot.
     await sql`UPDATE ranking_lists SET last_error = ${message}, next_fetch_at = now() + interval '6 hours', updated_at = now()
               WHERE id = ${list.id}`;
-    return { saved: 0, error: message };
+    return { saved: 0, analyzed: 0, error: message };
   }
 }
 
 /** The lists whose interval is due, one after another with a pause so a batch does not look like a scrape. */
-export async function collectDueRankings(now = new Date()): Promise<Array<{ id: string; saved: number; error: string | null }>> {
+export async function collectDueRankings(now = new Date()): Promise<Array<{ id: string; saved: number; analyzed: number; error: string | null }>> {
   const due = await sql<RankingListRow[]>`
     SELECT id, name, url, position, enabled, interval_minutes, last_fetched_at, last_error
     FROM ranking_lists WHERE enabled AND next_fetch_at <= now() ORDER BY position, id`;

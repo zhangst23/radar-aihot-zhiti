@@ -607,6 +607,8 @@ export interface RankingItemSummary {
   price: string | null;
   rating: string | null;
   reviews: number | null;
+  /** AI 选品分析（主打功效与核心成分），由采集任务生成；没有就是 null。 */
+  analysis: string | null;
 }
 
 export interface RankingListSummary {
@@ -615,6 +617,8 @@ export interface RankingListSummary {
   url: string;
   /** The day of the snapshot the items come from. */
   collectedOn: string | null;
+  /** Earlier snapshot days, newest first, for the 历史榜单 links. */
+  history: string[];
   items: RankingItemSummary[];
 }
 

@@ -10,7 +10,7 @@ import { loadPool, SearchBusyError } from "@aihot/backend/publication/pool";
 import { loadTimeline } from "@aihot/backend/publication/timeline";
 import { loadCategoryIndex, loadCategoryPage } from "@aihot/backend/publication/categories";
 import { isIsoDate, listEvents } from "@aihot/backend/publication/events";
-import { loadRankings } from "@aihot/backend/publication/rankings";
+import { loadRankings, loadRankingSnapshot } from "@aihot/backend/publication/rankings";
 import { loadHomeOverview } from "@aihot/backend/publication/overview";
 import { loadStoryFollowups } from "@aihot/backend/publication/followups";
 import { loadGroupReports } from "@aihot/backend/publication/groups";
@@ -194,6 +194,13 @@ export function registerSite(app: FastifyInstance) {
   app.get("/api/site/rankings", siteHandler(async (req, reply) => {
     const data = await loadRankings();
     return sendJsonWithEtag(req, reply, data, { etagPrefix: "rankings", cacheControl: "public, max-age=300, s-maxage=300" });
+  }));
+
+  app.get("/api/site/rankings/:listId/:date", siteHandler(async (req, reply) => {
+    const p = req.params as { listId: string; date: string };
+    const data = await loadRankingSnapshot(p.listId, p.date);
+    if (!data) return sendProblem(req, reply, { status: 404, code: "not_found", detail: "Not found." });
+    return sendJsonWithEtag(req, reply, data, { etagPrefix: "ranking-day", cacheControl: "public, max-age=3600, s-maxage=3600" });
   }));
 
   app.get('/api/site/search/suggestions', siteHandler(async (req, reply) => {

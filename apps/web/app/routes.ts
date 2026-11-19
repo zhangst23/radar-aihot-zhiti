@@ -37,6 +37,7 @@ export default [
   route("category/:category/:sub/page/:page", "routes/category.tsx", { id: "category-sub-page" }),
   route("events", "routes/events.tsx"),
   route("rankings", "routes/rankings.tsx"),
+  route("rankings/:listId/:date", "routes/ranking-day.tsx"),
   route("about", "routes/about.tsx"),
   route("terms", "routes/terms.tsx"),
   route("privacy", "routes/privacy.tsx"),
