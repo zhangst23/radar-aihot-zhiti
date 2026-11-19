@@ -76,7 +76,7 @@ export async function loadDiscoveryEntries(at = new Date(), limits?: { urls: num
     { loc: "/monthly", revision: reportRevision("monthly"), changefreq: "monthly", priority: 0.6 },
     { loc: "/topics", revision: sha256(stableJson(topics)), changefreq: "daily", priority: 0.7 },
     { loc: "/categories", revision: sha256(stableJson(categoryCounts)), changefreq: "daily", priority: 0.7 },
-    { loc: "/events", revision: sha256(stableJson(listEvents({ scope: "all" }, at))), changefreq: "weekly", priority: 0.6 },
+    { loc: "/events", revision: sha256(stableJson(await listEvents({ scope: "all" }, at))), changefreq: "weekly", priority: 0.6 },
     { loc: "/agent", revision: sha256(stableJson([SITE, ACCESS, AGENT])), changefreq: "weekly", priority: 0.7 },
     { loc: "/about", revision: sha256(stableJson(ABOUT)), changefreq: "monthly", priority: 0.5 },
     { loc: "/terms", revision: sha256(stableJson([POLICY.terms, await readFile(path.join(REPO_ROOT, "site/pages/terms.md"), "utf8")])), changefreq: "monthly", priority: 0.4 },

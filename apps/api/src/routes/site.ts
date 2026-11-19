@@ -181,7 +181,7 @@ export function registerSite(app: FastifyInstance) {
     if ((from && !isIsoDate(from)) || (to && !isIsoDate(to))) throw new BadRequest("invalid date");
     if (from && to && from > to) throw new BadRequest("invalid date range");
     if (q.category && !isCategoryKey(q.category)) throw new BadRequest("invalid category");
-    const data = listEvents({
+    const data = await listEvents({
       from, to, scope,
       category: q.category ?? null,
       country: q.country?.trim() || null,

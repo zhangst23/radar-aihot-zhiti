@@ -29,8 +29,13 @@ const SECTIONS: Array<{ title: string; items: NavItem[] }> = [
       { to: "/daily", label: withSubject("日报"), icon: IconDoc, covers: ["/weekly", "/monthly"] },
       { to: "/categories", label: "品类", icon: IconTag, covers: ["/category"] },
       { to: "/topics", label: "主题", icon: IconGrid },
-      { to: "/events", label: "展会", icon: IconCalendar },
       { to: "/starred", label: "收藏", icon: IconBookmark },
+    ],
+  },
+  {
+    title: "专题",
+    items: [
+      { to: "/events", label: "展会", icon: IconCalendar },
     ],
   },
   {

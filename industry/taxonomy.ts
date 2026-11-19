@@ -22,10 +22,10 @@ export const CATEGORIES = [
   { key: "feed-agri-pet", tagColor: "green", label: "饲料/农业/宠物", feedLabel: "饲料与农业", section: "精细化工与农业", blurb: "饲料与宠物添加剂、化肥、农药原料、土壤与植物营养材料的供应和登记。", guide: "饲料与宠物添加剂、化肥与肥料生产助剂、农药原药与中间体、农药配方助剂、生物农药与生物刺激素、土壤改良与植物营养材料、植物生长调节剂的品种、登记、产能与供应。农产品原料本身归天然原料与配料；终端宠物食品与农资品牌的营销归企业资讯。" },
   { key: "biotech", tagColor: "blue", label: "合成&发酵", feedLabel: "生物制造与创新", section: "生物制造", blurb: "合成生物、精准发酵、替代蛋白与新型原料从实验室到量产。", guide: "合成生物学、精准发酵、酶工程、细胞培养、替代蛋白、生物基材料与新型食品原料从实验室到量产、成本与商业化合作。发酵生产的具体原料（如某种氨基酸或蛋白）仍归对应原料类别；融资与并购归企业与市场。" },
   { key: "supply", tagColor: "wathet", label: "供应链和市场", feedLabel: "供应链与贸易", section: "市场与供应链", blurb: "原料价格、产地、产能、关税、物流与可持续采购。", guide: "原料价格、产地天气与减产、采收与库存、产能与停产检修、进出口与关税、贸易壁垒与制裁、物流与船期、可持续采购与认证（RSPO、有机、雨林联盟等）。价格与数字必须来自原文并写明产地、规格与时间；企业自己的扩产计划归企业与市场。" },
-  { key: "market", tagColor: "yellow", label: "企业资讯", feedLabel: "企业与市场", section: "市场与供应链", blurb: "原料企业的并购、融资、合作、财报、扩产与经营风险。", guide: "原料企业的并购、融资、合作与代理、财报与人事、新工厂与扩产计划、业务重组与关停。发布具体原料或配方仍归对应原料类别；展会现场发布归展会与活动。" },
-  { key: "oem", tagColor: "grey", label: "代工与 OEM", feedLabel: "代工与 OEM", section: "市场与供应链", blurb: "原料与配料的代工、委托生产与产能合作。", guide: "原料与配料的代工（OEM/ODM）、委托生产、产能合作，以及代工基地的投产、认证（GMP、FSSC 22000、有机）与交付。只写招商、询价或产能广告的稿子不算；企业自己的并购、财报与人事归企业资讯。" },
+  { key: "market", tagColor: "yellow", label: "企业资讯", feedLabel: "企业与市场", section: "市场与供应链", blurb: "原料企业的并购、融资、合作、财报、扩产与经营风险。", guide: "原料企业的并购、融资、合作与代理、财报与人事、新工厂与扩产计划、业务重组与关停。发布具体原料或配方仍归对应原料类别；展会上的招商、代理与现场发布也归这一类。" },
+  { key: "oem", tagColor: "grey", label: "OEM代工", feedLabel: "代工与 OEM", section: "市场与供应链", blurb: "原料与配料的代工、委托生产与产能合作。", guide: "原料与配料的代工（OEM/ODM）、委托生产、产能合作，以及代工基地的投产、认证（GMP、FSSC 22000、有机）与交付。只写招商、询价或产能广告的稿子不算；企业自己的并购、财报与人事归企业资讯。" },
   { key: "research", tagColor: "violet", label: "研究与临床", feedLabel: "研究与临床", section: "研究与临床", blurb: "临床、功效、安全性与检测方法的新研究，以及学术会议上的原料证据。", guide: "以新研究、临床试验、功效与安全性评价、检测方法和标准物质为核心的论文、报告与学术会议摘要。系统性综述、人体试验、生物利用度、毒理与过敏研究都在这里。只发布摘要而无产业意义的普通论文要压低；企业把研究当成新品卖点时，研究本身仍归这一类，产品发布归对应原料类别。" },
-  { key: "events", tagColor: "grey", label: "展会与活动", feedLabel: "展会与活动", section: "展会与活动", blurb: "全球原料与配料展会的日程、地点、展商与现场发布。", guide: "国际原料与配料展会的日程、地点、展商与现场发布（如 Fi Europe、Vitafoods、SupplySide、CPHI、in-cosmetics、IFEAT、WPC），以及行业会议、评奖与培训。只写展位和报名优惠的招商稿不算；展会上的具体原料发布仍可归对应原料类别。" },
+  { key: "china", tagColor: "red", label: "中国", feedLabel: "中国", section: "中国", blurb: "中国原料企业的动向、在华产能与中国市场的行情与政策。", guide: "中国原料企业与在华生产销售的活动：原料与新品发布、扩产与新建工厂、并购与融资、财报与人事、合作与代理、停产与关停、代工订单；以及中国产地与中国市场的原料行情、进出口、库存与国产替代进展。中国监管机构发布的法规、标准与批准文本仍归法规监管，以研究结论为主体的稿件归研究与临床，非中国企业、非中国产地的消息留在对应类别。" },
 ] as const satisfies ReadonlyArray<{ key: string; tagColor: string; label: string; feedLabel?: string; section: string; blurb: string; guide: string; commentary?: true }>;
 
 /**
@@ -235,9 +235,6 @@ export const SUBCATEGORIES: Readonly<Record<string, ReadonlyArray<{ key: string;
   market: [
     { key: "mna", label: "并购/融资", tag: "并购/融资" },
     { key: "capacity", label: "产能扩张", tag: "产能扩张" },
-  ],
-  events: [
-    { key: "trade-shows", label: "展会", tag: "展会" },
   ],
 };
 

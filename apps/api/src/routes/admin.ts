@@ -16,6 +16,7 @@ import { resolveDelivery } from "@aihot/backend/notify/deliver";
 import { releaseReceipt } from "@aihot/backend/operations/recover";
 import { replaceContactQr, setTargetEnabled, settingsOverview, updateBudget } from "@aihot/backend/admin/settings";
 import { createSource, fetchNow, listSources, previewSource, previewStoredSource, sourceDetail, updateSource } from "@aihot/backend/admin/sources";
+import { adminEvents, createEvent, deleteEvent, updateEvent } from "@aihot/backend/admin/events";
 import { sendProblem } from "../http/respond.ts";
 import { adminHandler } from "./admin-auth.ts";
 
@@ -52,6 +53,15 @@ export function registerAdmin(app: FastifyInstance) {
   }));
   app.post("/api/admin/sources/:id/preview", adminHandler(async (req, reply) => orNotFound(req, reply, await previewStoredSource(param(req, "id")))));
   app.post("/api/admin/sources/:id/fetch", adminHandler(async (req, reply, admin) => orNotFound(req, reply, await fetchNow(param(req, "id"), actorOf(admin)))));
+
+  // 专题 · 展会（industry_events）：列表、新建、修改、删除
+  app.get("/api/admin/events", adminHandler(async () => ({ events: await adminEvents() })));
+  app.post("/api/admin/events", adminHandler(async (req, _reply, admin) => createEvent(body(req), actorOf(admin))));
+  app.patch("/api/admin/events/:id", adminHandler(async (req, reply, admin) => orNotFound(req, reply, await updateEvent(param(req, "id"), body(req), actorOf(admin)))));
+  app.delete("/api/admin/events/:id", adminHandler(async (req, reply, admin) => {
+    const done = await deleteEvent(param(req, "id"), actorOf(admin));
+    return done ? { ok: true } : notFound(req, reply);
+  }));
 
   // Content and events
   app.get("/api/admin/content", adminHandler(async (req) => ({ rows: await searchContent(q(req).q ?? "") })));

@@ -1,14 +1,12 @@
-// The industry's trade-show calendar: dates, venues and official sites from industry/events.json,
-// checked against the organisers' pages on the date the file records. Read-only; no collected article
-// can add an event on its own, so a wrong date never reaches the calendar through the pipeline.
-import { readFileSync } from "node:fs";
-import path from "node:path";
+// The industry's trade-show calendar: rows in industry_events, seeded once from industry/events.json and
+// edited in the admin afterwards (专题 · 展会). Read-only for the public read layer; no collected article can
+// add an event on its own, so a wrong date never reaches the calendar through the pipeline.
 import type { CategoryKey } from "@aihot/contracts/taxonomy";
 import type { EventsResponse, EventStatus, IndustryEventSummary } from "@aihot/contracts/site";
 import { beijingDate } from "@aihot/contracts/time";
-import { REPO_ROOT } from "../config.ts";
+import { sql } from "../db.ts";
 
-interface StoredEvent {
+export interface StoredEvent {
   id: string;
   name: string;
   start: string;
@@ -16,18 +14,37 @@ interface StoredEvent {
   city: string;
   country: string;
   venue: string | null;
-  note?: string | null;
+  note: string | null;
   categories: CategoryKey[];
   website: string;
   source: string;
+  /** The day the organisers' pages were last checked for this event. */
+  checkedAt: string | null;
 }
 
-interface Store {
-  checkedAt: string;
-  events: StoredEvent[];
+interface EventRow {
+  id: string;
+  name: string;
+  start: string;
+  end: string;
+  city: string;
+  country: string;
+  venue: string | null;
+  note: string | null;
+  categories: string[];
+  website: string;
+  source: string;
+  checked_at: string | null;
 }
 
-const store = JSON.parse(readFileSync(path.join(REPO_ROOT, "industry/events.json"), "utf8")) as Store;
+/** Every event, oldest first; callers filter and order. */
+export async function storedEvents(): Promise<StoredEvent[]> {
+  const rows = await sql<EventRow[]>`
+    SELECT id, name, to_char(starts_on, 'YYYY-MM-DD') AS start, to_char(ends_on, 'YYYY-MM-DD') AS "end",
+           city, country, venue, note, categories, website, source, to_char(checked_on, 'YYYY-MM-DD') AS checked_at
+    FROM industry_events ORDER BY starts_on`;
+  return rows.map((row) => ({ ...row, categories: row.categories as CategoryKey[], checkedAt: row.checked_at }));
+}
 
 export interface EventQuery {
   /** Inclusive YYYY-MM-DD range; an event is kept when it overlaps it. */
@@ -49,11 +66,14 @@ export function eventStatus(event: Pick<StoredEvent, "start" | "end">, now = new
   return "ongoing";
 }
 
-/** The calendar's entries, filtered and ordered; the same store for the page, the API and the sitemap. */
-export function listEvents(query: EventQuery = {}, now = new Date()): EventsResponse {
+/** The calendar's entries, filtered and ordered; the same rows for the page, the API and the sitemap. */
+export async function listEvents(query: EventQuery = {}, now = new Date()): Promise<EventsResponse> {
   const scope = query.scope ?? "upcoming";
   const q = query.q?.trim().toLowerCase() ?? "";
-  const events = store.events
+  const stored = await storedEvents();
+  // The newest check across the calendar: what the page's "最近一次核对" says.
+  const checkedAt = stored.reduce<string>((newest, e) => ((e.checkedAt ?? "") > newest ? e.checkedAt! : newest), "");
+  const events = stored
     .filter((event) => {
       const status = eventStatus(event, now);
       if (scope === "upcoming" && status === "past") return false;
@@ -73,7 +93,7 @@ export function listEvents(query: EventQuery = {}, now = new Date()): EventsResp
       city: event.city,
       country: event.country,
       venue: event.venue,
-      note: event.note ?? null,
+      note: event.note,
       categories: event.categories,
       website: event.website,
       status: eventStatus(event, now),
@@ -85,10 +105,10 @@ export function listEvents(query: EventQuery = {}, now = new Date()): EventsResp
         || (a.status === "past" ? b.start.localeCompare(a.start) : a.start.localeCompare(b.start))
         || a.name.localeCompare(b.name);
     });
-  return { checkedAt: store.checkedAt, events, total: events.length, countries: eventCountries() };
+  return { checkedAt, events, total: events.length, countries: eventCountries(stored) };
 }
 
 /** The countries the calendar knows, for the filter select. */
-export function eventCountries(): string[] {
-  return [...new Set(store.events.map((event) => event.country))].sort((a, b) => a.localeCompare(b, "zh-CN"));
+export function eventCountries(events: readonly StoredEvent[]): string[] {
+  return [...new Set(events.map((event) => event.country))].sort((a, b) => a.localeCompare(b, "zh-CN"));
 }

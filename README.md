@@ -75,7 +75,7 @@
 
 目前收录 15 场（2026-11-16 核对）：Fi Europe、CPHI India、PMEC India、Pharmapack Europe、Natural Products Expo West、in-cosmetics Global / Korea / Latin America / Asia、CPHI Japan / Middle East / Americas / China、Hi & Fi Asia-China、Fi Asia Thailand。
 
-日期、城市和场馆来自主办方页面；没有核实到确切日期的展会不写入。数据在 `industry/events.json`，新增前先核对官网，并更新文件里的 `checkedAt`。
+日期、城市和场馆来自主办方页面；没有核实到确切日期的展会不写入。日历在后台“专题 · 展会”里维护（首次启动按 `industry/events.json` 导入），新增前先核对官网。
 
 ### 信源
 
